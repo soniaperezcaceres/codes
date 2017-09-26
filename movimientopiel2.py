@@ -2,7 +2,7 @@ import cv2
 import time
 import numpy as np
  
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(1) #Puede ser VideoCapture(0) dependiendo del PC
 m=25
 m1=500
 
@@ -72,6 +72,7 @@ while(1):
   
 # Buscamos contorno en la imagen
   im, contornos, hierarchy = cv2.findContours(contornosimg,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+# Si aparece el error: ValueError: need more than 2 values to unpack, eliminar 'im' de las variables 'im, contornos, hierarchy'
  
 # Recorremos todos los contornos encontrados
   for c in contornos:
