@@ -1,8 +1,9 @@
 import cv2
 import time
 import numpy as np
+from nms_fast import mincuadro
  
-cap = cv2.VideoCapture(1) #Puede ser VideoCapture(0) dependiendo del PC
+cap = cv2.VideoCapture(0)
 m=25
 m1=500
 
@@ -46,7 +47,7 @@ fondo = None
 #recorremos todos los frames
 while(1):
   _,frame = cap.read() #Leer un frame
-  
+  frame2 = frame.copy ()
   gris = colorChange(frame)
   gris = colorFilter(gris)
   
@@ -71,19 +72,19 @@ while(1):
   contornosimg = umbral.copy()
   
 # Buscamos contorno en la imagen
-  im, contornos, hierarchy = cv2.findContours(contornosimg,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
-# Si aparece el error: ValueError: need more than 2 values to unpack, eliminar 'im' de las variables 'im, contornos, hierarchy'
- 
+  contornos, hierarchy = cv2.findContours(contornosimg,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+  cajas = []
 # Recorremos todos los contornos encontrados
   for c in contornos:
 # Eliminamos los contornos más pequeños
-		if cv2.contourArea(c) < m1:
-			continue
-        
+       if cv2.contourArea(c) < m1:
+          continue    
 # Obtenemos el bounds del contorno, el rectángulo mayor que engloba al contorno
-		(x, y, w, h) = cv2.boundingRect(c)
+       (x, y, w, h) = cv2.boundingRect(c)
 # Dibujamos el rectángulo del bounds
-		cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+       cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+       cajas.append((x,y,x+w,y+h))
+  image2 = mincuadro(frame2,np.array(cajas)) 
 
   #Mostrar los resultados y salir
   cv2.imshow('camara',frame)
@@ -91,6 +92,8 @@ while(1):
   cv2.imshow("Umbral", umbral)
   cv2.imshow("Resta", resta)
   cv2.imshow("Contorno", contornosimg)
+  cv2.imshow("other", image2)
+  
     
   k = cv2.waitKey(5) & 0xFF
   
