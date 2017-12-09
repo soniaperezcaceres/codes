@@ -19,7 +19,7 @@ def funcionRegiones(regionsNumber):
                 rect = (x, y, 0, 0)
                 startPoint = True
                 
-            elif endPoint == False: # Como ya starPoint está en TRUE, esta condición se cumple y ahora endPoint pasa a ser TRUE también  
+            elif endPoint == False: # Como ya starPoint esta en TRUE, esta condicion se cumple y ahora endPoint pasa a ser TRUE tambien  
                 rect = (rect[0], rect[1], x, y) # Conserva las coordernadas de starPoint y añade las de endPoint
                 dragnDrop == False
                 regionPoints[regionCount][0] = rect[0]
@@ -37,7 +37,7 @@ def funcionRegiones(regionsNumber):
             dragnDrop = True
             ix,iy = x,y
                        
-        if event == cv2.EVENT_RBUTTONDOWN and dragnDrop == True: # Cuando haces right click y se está Drag n' Dropin', se suelta el rectángulo
+        if event == cv2.EVENT_RBUTTONDOWN and dragnDrop == True: # Cuando haces right click y se está Drag n' Dropin', se suelta el rectangulo
             releaseRectangle = True
             ix,iy = x,y
     
@@ -69,7 +69,7 @@ def funcionRegiones(regionsNumber):
         cv2.setMouseCallback('frame', on_mouse)    
         
         # Dibujar el Drag n' Drop
-        if startPoint == True and endPoint == False: # Primer click, vuelve starPoint TRUE para 'asegurarse de que ya tomó la primera coordenada'
+        if startPoint == True and endPoint == False: # Primer click, vuelve starPoint TRUE para 'asegurarse de que ya tomo la primera coordenada'
             cv2.rectangle(frame, (rect[0], rect[1]), (ix, iy), (255, 0, 255), 2) # Con las coordenadas construye el rectángulo
             
         # Dibujar el rectángulo
@@ -84,7 +84,7 @@ def funcionRegiones(regionsNumber):
             endPoint = False
             releaseRectangle = False
             dragnDrop = False
-            cv2.rectangle(frame, (0,0),(0,0), (255, 0, 255), 2) # Con las coordenadas construye el rectángulo
+            cv2.rectangle(frame, (0,0),(0,0), (255, 0, 255), 2) # Con las coordenadas construye el rectangulo
     
         cv2.imshow('frame',frame)
     
