@@ -7,7 +7,7 @@ print("Bienvenid@")
 print("Por favor elija las regiones correspondientes al jabón y al agua")
 y = regions.funcionRegiones(2)
 
-print("Por favor seleccione un rango de color")
+print("Por favor seleccione un rango de color y presione ESC o la barra espaciadora para finalizar")
 lower, upper = colorPiel.funcionColor()
 
 
