@@ -1,4 +1,0 @@
-import Regions
-
-print("Hola a todos")
-print(Regions.funcionRegiones(4))

@@ -1,0 +1,29 @@
+import regions
+import colorPiel
+import contadorMovimiento
+import time
+
+print("Bienvenid@")
+print("Por favor elija las regiones correspondientes al jabón y al agua")
+y = regions.funcionRegiones(2)
+
+print("Por favor seleccione un rango de color")
+lower, upper = colorPiel.funcionColor()
+
+
+print 'Por favor tome el jabón'
+time.sleep(2)  
+b = contadorMovimiento.funcionMovimientoEnRegion(y[0],5,1,lower,upper) #(coordenadas de la region, numero de segundos dentro de la region, numero de la region)
+if b:
+    print 'Cumplió con el tiempo requerido en la región ', 1
+
+print 'Por favor siga las instrucciones de lavado de sus manos'
+time.sleep(3) 
+
+c = contadorMovimiento.funcionMovimientoEnRegion(y[1],10,2,lower,upper) 
+if c:
+    print 'Cumplió con el tiempo requerido en la región ', 2
+
+print 'Puede proceder a enjuagar sus manos '
+
+time.sleep(2)    
