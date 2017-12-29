@@ -23,7 +23,7 @@ def funcionMovimientoEnRegion(regionCoordinates,tiempo,noRegion,lowerValue,upper
               return True
           
     def currentTime(): # Obtain current time in seconds
-        time1 = time.localtime()
+        time1 = time.localtime()  
         time2 = (time1[0],time1[1],time1[2],time1[3],time1[4],time1[5],time1[6],time1[7],time1[8])
         currentTime = time.mktime(time2)
         return currentTime
@@ -36,9 +36,6 @@ def funcionMovimientoEnRegion(regionCoordinates,tiempo,noRegion,lowerValue,upper
         mask = cv2.inRange(frame, lower, upper)
         return mask
     
-    def nothing(x):
-       pass
-    
     #nos servira para obterner el fondo
     fondo = None
     
@@ -49,14 +46,20 @@ def funcionMovimientoEnRegion(regionCoordinates,tiempo,noRegion,lowerValue,upper
       frame2 = np.copy (frame)
       gris = colorChange(frame)
       gris = colorFilter(gris)
+     
       
     #aplicamos suavizado para eliminar el ruido
       gris = cv2.GaussianBlur(gris, (21, 21), 0)
       
-    #si todavia no hemos obtenido el fonod, lo obtenemos
+      
+    #si todavia no hemos obtenido el fondo, lo obtenemos
       if fondo is None:
+          fondoanterior = gris
           fondo = gris
           continue
+      else:
+          fondo = fondoanterior
+      
       
     #calculo la dif etre el fondo y el frame
       resta = cv2.absdiff(fondo, gris)
@@ -85,7 +88,7 @@ def funcionMovimientoEnRegion(regionCoordinates,tiempo,noRegion,lowerValue,upper
            cajas.append((x,y,x+w,y+h))
       
       image2 = mincuadro(frame2,np.array(cajas)) 
-      
+      print cajas
       # Define si hay movimiento dentro de las regiones FIXED FOR 3 REGIONS
             
       for rect in cajas:
@@ -93,6 +96,7 @@ def funcionMovimientoEnRegion(regionCoordinates,tiempo,noRegion,lowerValue,upper
           if overlap:
               if chrono == 0:
                   chrono = currentTime()
+                  print "Hay movimiento en la region ", noRegion
               else:
                   chrono2 = currentTime()
                   if (chrono2 - chrono) >= tiempo:
@@ -100,24 +104,26 @@ def funcionMovimientoEnRegion(regionCoordinates,tiempo,noRegion,lowerValue,upper
                       cv2.destroyAllWindows()
                       return True
                       break
-                  print "Hay movimiento en la region ", noRegion
-          else:
-              print('Se saltó un paso, recomience')
-              chrono = 0
                   
+          else:
+              if chrono == 0:
+                  pass
+              else:
+                  print('Se saltó un paso, recomience')
+                  chrono = 0
                   
              
       cv2.rectangle(image2, (regionCoordinates[0], regionCoordinates[1]), (regionCoordinates[2], regionCoordinates[3]), (255, 0, 255), 2) # Con las coordenadas construye el rectángulo
    
-      
       #Mostrar los resultados y salir
       
-      #cv2.imshow('camara',frame)
-      #cv2.imshow('gris',gris)
-      #cv2.imshow("Umbral", umbral)
-      #cv2.imshow("Resta", resta)
-      #cv2.imshow("Contorno", contornosimg)
+      cv2.imshow('camara',frame)
+      cv2.imshow('gris',gris)
+      cv2.imshow("Umbral", umbral)
+      cv2.imshow("Resta", resta)
+      cv2.imshow("Contorno", contornosimg)
       cv2.imshow("other", image2)
+      fondoanterior = gris
 
       k = cv2.waitKey(5) & 0xFF
   
