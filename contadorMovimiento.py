@@ -10,6 +10,11 @@ def funcionMovimientoEnRegion(regionCoordinates,tiempo,noRegion,lowerValue,upper
     m=25
     m1=500
     chrono = 0
+    exitHands = 0
+    outHands = 0
+    inHandsnoMov = 0
+    prevBoxes = []
+    xRange = 50
     
     def colorChange(frame):
     #convertimos a escalas de grises
@@ -30,38 +35,63 @@ def funcionMovimientoEnRegion(regionCoordinates,tiempo,noRegion,lowerValue,upper
     
     def colorFilter(frame):
     #Se crea un array con las posiciones minimas y maximas
-        lower=lowerValue
-        upper=upperValue
+        lower = lowerValue
+        upper = upperValue
+#        lower=[33,78,97]
+#        upper=[88,163,255]
     #Deteccion de colores
         mask = cv2.inRange(frame, lower, upper)
         return mask
+
+    def umbralMovimiento(prevBoxes,rect,xRange):
+        #No hay necesidad de probar que las boxes anteriores estaban dentro de la región 
+        #Boxes anteriores son confiables, es decir, se encontraban previamente dentro de la región
+
+        for prev in prevBoxes:
+            xLimA1 = prev[0] - xRange
+            xLimA2 = prev[0] + xRange
+            
+            yLimA1 = prev[1] - xRange
+            yLimA2 = prev[1] + xRange
+            
+            xLimB1 = prev[2] - xRange
+            xLimB2 = prev[2] + xRange
+            
+            yLimB1 = prev[3] - xRange
+            yLimB2 = prev[3] + xRange
+            
+            if(xLimA1<rect[0] and rect[0]<xLimA2 and yLimA1<rect[1] and rect[1]<yLimA2 
+               and xLimB1<rect[2] and rect[2]<xLimB2 and yLimB1<rect[3] and rect[3]<yLimB2):
+              return True
+        else:
+              return False
+        
     
-    #nos servira para obterner el fondo
+    # Nos servira para obterner el fondo
     fondo = None
     
-    #recorremos todos los frames
+    # Recorremos todos los frames
     while(1):
       _,frame = cap.read() #Leer un frame
-      #print(type(frame))
       frame2 = np.copy (frame)
       gris = colorChange(frame)
       gris = colorFilter(gris)
      
       
-    #aplicamos suavizado para eliminar el ruido
+    # Aplicamos suavizado para eliminar el ruido
       gris = cv2.GaussianBlur(gris, (21, 21), 0)
       
-      
-    #si todavia no hemos obtenido el fondo, lo obtenemos
+    # Si todavia no hemos obtenido el fondo, lo obtenemos
       if fondo is None:
           fondoanterior = gris
           fondo = gris
           continue
       else:
           fondo = fondoanterior
+          
       
       
-    #calculo la dif etre el fondo y el frame
+    # Calculo la dif etre el fondo y el frame
       resta = cv2.absdiff(fondo, gris)
      
     # Aplicamos un umbral
@@ -88,42 +118,87 @@ def funcionMovimientoEnRegion(regionCoordinates,tiempo,noRegion,lowerValue,upper
            cajas.append((x,y,x+w,y+h))
       
       image2 = mincuadro(frame2,np.array(cajas)) 
+      
       print cajas
-      # Define si hay movimiento dentro de las regiones FIXED FOR 3 REGIONS
+      
+      
+      if not prevBoxes:
+           prevBoxes = cajas
+           pass
+              
+      
+      # Define si hay movimiento dentro de las regiones
             
       for rect in cajas:
           overlap = overlapRectangles(regionCoordinates,rect)
           if overlap:
-              if chrono == 0:
-                  chrono = currentTime()
-                  print "Hay movimiento en la region ", noRegion
+              exitHands = 0
+              outHands = 0
+              c = umbralMovimiento(prevBoxes,rect,xRange)
+                           
+              if not c: 
+                  if chrono == 0:
+                      chrono = currentTime()
+                      prevBoxes = cajas
+                      print "Hay presencia en la region ", noRegion
+                      pass
+                  else:
+                      chrono_aux = currentTime()
+                      if (chrono_aux - chrono) >= tiempo:
+                          cap.release()
+                          cv2.destroyAllWindows()
+                          return True
+                          break
               else:
-                  chrono2 = currentTime()
-                  if (chrono2 - chrono) >= tiempo:
+                  outHands = 0
+                  exitHands = 0
+                  inHandsnoMov+=1
+                  if inHandsnoMov == 200:
+                      print "Debido a que no ha seguido el procedimiento deberá recomenzar inHandsnoMov' MUEVA MAS"
                       cap.release()
                       cv2.destroyAllWindows()
-                      return True
+                      return False
+                      break
+                  
+                  
+          elif not cajas:
+                  inHandsnoMov = 0
+                  outHands = 0
+                  exitHands+=1
+                  if exitHands == 100:
+                      print "exitHands"
+                      cap.release()
+                      cv2.destroyAllWindows()
+                      return False
                       break
                   
           else:
-              if chrono == 0:
-                  pass
-              else:
-                  print('Se saltó un paso, recomience')
-                  chrono = 0
+              inHandsnoMov = 0
+              exitHands = 0
+              if outHands == 1:
+                  print 'No hay presencia en la región outHands ', noRegion, '. Por favor enjabone sus manos cerca del lavamanos.'
+              chrono = 0
+              outHands+=1
+              if outHands == 500:
+                  cap.release()
+                  cv2.destroyAllWindows()
+                  return False
+                  break
                   
              
       cv2.rectangle(image2, (regionCoordinates[0], regionCoordinates[1]), (regionCoordinates[2], regionCoordinates[3]), (255, 0, 255), 2) # Con las coordenadas construye el rectángulo
    
       #Mostrar los resultados y salir
       
-      cv2.imshow('camara',frame)
-      cv2.imshow('gris',gris)
-      cv2.imshow("Umbral", umbral)
-      cv2.imshow("Resta", resta)
-      cv2.imshow("Contorno", contornosimg)
+      #cv2.imshow('camara',frame)
+      #cv2.imshow('gris',gris)
+      #cv2.imshow("Umbral", umbral)
+      #cv2.imshow("Resta", resta)
+      #cv2.imshow("Contorno", contornosimg)
       cv2.imshow("other", image2)
+      
       fondoanterior = gris
+      prevBoxes = cajas
 
       k = cv2.waitKey(5) & 0xFF
   
