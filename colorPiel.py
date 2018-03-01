@@ -5,10 +5,14 @@ def funcionColor():
     import numpy as np
     import time
     from nms_fast import mincuadro
-     
+        
     cap = cv2.VideoCapture(0)
     m=25
     m1=500
+
+    cap.set(3,320)
+    cap.set(4,240)
+    
 #    noRegions = len(regions)
     
     def colorChange(frame):
@@ -25,12 +29,20 @@ def funcionColor():
     
     def colorFilter(frame):
     #Los valores maximo y minimo de H,S y V se guardan en funcion de la posicion de los sliders
-        hMin = cv2.getTrackbarPos('H Minimo','image')
-        hMax = cv2.getTrackbarPos('H Maximo','image')
-        sMin = cv2.getTrackbarPos('S Minimo','image')
-        sMax = cv2.getTrackbarPos('S Maximo','image')
-        vMin = cv2.getTrackbarPos('V Minimo','image')
-        vMax = cv2.getTrackbarPos('V Maximo','image')
+##        hMin = cv2.getTrackbarPos('H Minimo','image')
+##        hMax = cv2.getTrackbarPos('H Maximo','image')
+##        sMin = cv2.getTrackbarPos('S Minimo','image')
+##        sMax = cv2.getTrackbarPos('S Maximo','image')
+##        vMin = cv2.getTrackbarPos('V Minimo','image')
+##        vMax = cv2.getTrackbarPos('V Maximo','image')
+        
+## para Pruebas con color verde
+        hMin = 30
+        hMax = 90
+        sMin = 120 
+        sMax = 250
+        vMin = 95
+        vMax = 200
      
     #Se crea un array con las posiciones minimas y maximas
         lower=np.array([hMin,sMin,vMin])
@@ -44,13 +56,13 @@ def funcionColor():
        pass
      
     #Creamos una ventana llamada 'image' en la que habra todos los sliders
-    cv2.namedWindow('image')
-    cv2.createTrackbar('H Minimo','image',0,255,nothing)
-    cv2.createTrackbar('H Maximo','image',0,255,nothing)
-    cv2.createTrackbar('S Minimo','image',0,255,nothing)
-    cv2.createTrackbar('S Maximo','image',0,255,nothing)
-    cv2.createTrackbar('V Minimo','image',0,255,nothing)
-    cv2.createTrackbar('V Maximo','image',0,255,nothing)
+##    cv2.namedWindow('image')
+##    cv2.createTrackbar('H Minimo','image',0,255,nothing)
+##    cv2.createTrackbar('H Maximo','image',0,255,nothing)
+##    cv2.createTrackbar('S Minimo','image',0,255,nothing)
+##    cv2.createTrackbar('S Maximo','image',0,255,nothing)
+##    cv2.createTrackbar('V Minimo','image',0,255,nothing)
+##    cv2.createTrackbar('V Maximo','image',0,255,nothing)
      
     #nos servira para obterner el fondo
     fondo = None
@@ -83,8 +95,11 @@ def funcionColor():
     # Copiamos el umbral para detectar los contornos
       contornosimg = umbral.copy()
       
-    # Buscamos contorno en la imagen
-      contornos, hierarchy = cv2.findContours(contornosimg,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+    # Buscamos contorno en la imagen OJO
+      try:
+          im,contornos, hierarchy = cv2.findContours(contornosimg,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+      except:
+          contornos, hierarchy = cv2.findContours(contornosimg,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
       cajas = []
     # Recorremos todos los contornos encontrados
       for c in contornos:
@@ -122,23 +137,18 @@ def funcionColor():
       #cv2.imshow("Contorno", contornosimg)
       cv2.imshow("other", image2)
       
-        
-     # k = cv2.waitKey(5) & 0xFF
       
       #tiempo de espera para que se vea bien
-      
 
-      k = cv2.waitKey(5) & 0xFF
-  
-  #tiempo de espera para que se vea bien
-  
+      k=cv2.waitKey(5) & 0xFF
       time.sleep(0.015)
-    
-          #si ha pulsado escape para salir, salimos
-      if k == 27 or k== 32:
-    #liberamos la camara y cerramos todas las ventanas
-        
-        cap.release()
-        cv2.destroyAllWindows()
-        return lower, upper
+      if k == 27:
+          break
+      
+    cap.release()
+    cv2.destroyAllWindows()
+    for i in range (1,10):
+        cv2.waitKey(1)
+  
+    return lower, upper
     #return upper, lower
