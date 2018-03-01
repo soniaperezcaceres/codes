@@ -9,6 +9,8 @@ def funcionMovimientoEnRegion(regionCoordinates,tiempo,noRegion,lowerValue,upper
     cap = cv2.VideoCapture(0)
     m=25
     m1=500
+    cap.set(3,320)
+    cap.set(4,240)
     chrono = 0
     exitHands = 0
     outHands = 0
@@ -87,9 +89,7 @@ def funcionMovimientoEnRegion(regionCoordinates,tiempo,noRegion,lowerValue,upper
           fondo = gris
           continue
       else:
-          fondo = fondoanterior
-          
-      
+          fondo = fondoanterior      
       
     # Calculo la dif etre el fondo y el frame
       resta = cv2.absdiff(fondo, gris)
@@ -104,7 +104,10 @@ def funcionMovimientoEnRegion(regionCoordinates,tiempo,noRegion,lowerValue,upper
       contornosimg = umbral.copy()
       
     # Buscamos contorno en la imagen
-      contornos, hierarchy = cv2.findContours(contornosimg,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+      try:
+          im,contornos, hierarchy = cv2.findContours(contornosimg,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+      except:
+          contornos, hierarchy = cv2.findContours(contornosimg,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
       cajas = []
     # Recorremos todos los contornos encontrados
       for c in contornos:
@@ -119,14 +122,12 @@ def funcionMovimientoEnRegion(regionCoordinates,tiempo,noRegion,lowerValue,upper
       
       image2 = mincuadro(frame2,np.array(cajas)) 
       
-      print cajas
-      
-      
+#      print cajas
+            
       if not prevBoxes:
            prevBoxes = cajas
            pass
-              
-      
+                    
       # Define si hay movimiento dentro de las regiones
             
       for rect in cajas:
@@ -140,13 +141,15 @@ def funcionMovimientoEnRegion(regionCoordinates,tiempo,noRegion,lowerValue,upper
                   if chrono == 0:
                       chrono = currentTime()
                       prevBoxes = cajas
-                      print "Hay presencia en la region ", noRegion
+              #        print "Hay presencia en la region ", noRegion
                       pass
                   else:
                       chrono_aux = currentTime()
                       if (chrono_aux - chrono) >= tiempo:
                           cap.release()
                           cv2.destroyAllWindows()
+                          for i in range (1,10):
+                            cv2.waitKey(1)
                           return True
                           break
               else:
@@ -154,34 +157,39 @@ def funcionMovimientoEnRegion(regionCoordinates,tiempo,noRegion,lowerValue,upper
                   exitHands = 0
                   inHandsnoMov+=1
                   if inHandsnoMov == 200:
-                      print "Debido a que no ha seguido el procedimiento deberá recomenzar inHandsnoMov' MUEVA MAS"
+               #       print "Debido a que no ha seguido el procedimiento deberá recomenzar ' MUEVA MAS"
                       cap.release()
                       cv2.destroyAllWindows()
+                      for i in range (1,10):
+                        cv2.waitKey(1)
                       return False
                       break
-                  
-                  
+                                    
           elif not cajas:
                   inHandsnoMov = 0
                   outHands = 0
                   exitHands+=1
                   if exitHands == 100:
-                      print "exitHands"
+                      print "exit"
                       cap.release()
                       cv2.destroyAllWindows()
+                      for i in range (1,10):
+                          cv2.waitKey(1)
                       return False
                       break
-                  
+                 
           else:
               inHandsnoMov = 0
               exitHands = 0
-              if outHands == 1:
-                  print 'No hay presencia en la región outHands ', noRegion, '. Por favor enjabone sus manos cerca del lavamanos.'
+##              if outHands == 1:
+           #       print 'No hay presencia en la región Por favor hagalo mejor.'
               chrono = 0
               outHands+=1
               if outHands == 500:
                   cap.release()
                   cv2.destroyAllWindows()
+                  for i in range (1,10):
+                      cv2.waitKey(1)
                   return False
                   break
                   
@@ -210,4 +218,6 @@ def funcionMovimientoEnRegion(regionCoordinates,tiempo,noRegion,lowerValue,upper
     #liberamos la camara y cerramos todas las ventanas
         cap.release()
         cv2.destroyAllWindows()
+        for i in range (1,10):
+            cv2.waitKey(1)
     
