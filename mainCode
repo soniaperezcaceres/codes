@@ -1,38 +1,232 @@
+# -*- coding: utf-8 -*-
 import regions
 import colorPiel
 import contadorMovimiento
 import time
 import sys
+from Tkinter import *
 
-print("Bienvenid@")
-print("Por favor elija las regiones correspondientes al jabón y al agua")
-y = regions.funcionRegiones(2)
+###########################################
+ventana = Tk()
+ventana.title('MANITOR')
+ventana.configure(bg="white")
+ventana.geometry("400x220+100+100")
 
-print("Por favor seleccione un rango de color y presione ESC o la barra espaciadora para finalizar")
-lower, upper = colorPiel.funcionColor()
+label=Label(ventana,text="BIENVENIDO",
+             fg="red",bg="white",font=("Helvetica 24 bold"))
+label.grid(row=1,column=1)
 
-# PARA HACER QUE SE REPITA HASTA QUE LO HAGA SE PONE UN WHILE CON b DE CONDICION. BREAK EN CASO DE SALIDA
-print 'Por favor tome el jabón'
-time.sleep(2)  
-b = contadorMovimiento.funcionMovimientoEnRegion(y[0],2,1,lower,upper) #(coordenadas de la region, numero de segundos dentro de la region, numero de la region)
-if b:
-    print 'Cumplió con el tiempo requerido en la región ', 1
-else: 
-    sys.exit("No cumple con el lavado correcto. Vuelva a empezar")
+############################################
 
-print 'Por favor siga las instrucciones de lavado de sus manos'
+labelregiones=Label(ventana,
+             text="Por favor seleccione las regiones correspondientes",
+             fg="black",bg="white",font=("Helvetica 12"))
+labelregiones.grid(row=2,column=1)
 
+def regiones():
+    global y
+    y = regions.funcionRegiones(2)
 
-time.sleep(3) 
+botonregiones = Button(ventana,text="REGIONES", command=regiones,
+                fg="white",bg='red',font=("Helvetica 12 bold"))
+botonregiones.grid(row=3,column=1)
 
+###########################################
 
+labelcolor=Label(ventana,
+             text="Por favor seleccione un rango de color",
+             fg="black",bg="white",font=("Helvetica 12 "))
+labelcolor.grid(row=4,column=1)
 
-c = contadorMovimiento.funcionMovimientoEnRegion(y[1],10,2,lower,upper) 
-if c:
-    print 'Cumplió con el tiempo requerido en la región ', 2
-else: 
-    sys.exit("No cumple con el lavado correcto. Vuelva a empezar")
+def color():
+    global lower,upper
+    lower, upper = colorPiel.funcionColor()
 
-print 'Puede proceder a enjuagar sus manos '
+botoncolor = Button(ventana,text="COLOR", command=color,
+                fg="white",bg='red',font=("Helvetica 12 bold"))
+botoncolor.grid(row=5,column=1)
 
-time.sleep(2)    
+############################################
+labelinicio=Label(ventana,
+             text="Ahora si puede iniciar",
+             fg="black",bg="white",font=("Helvetica 12 "))
+labelinicio.grid(row=6,column=1)
+
+def inicio():
+
+##    filename = 'Logs_'+time.strftime("%H:%M:%S")+' - ' + time.strftime("%d-%m-%y") + '.txt'
+##    try:
+##        archivo = open(filename,'r+')
+##    except:
+##        archivo = open(filename,'w')
+##    archivo.write('inicio del programa. \n')
+    
+    ventana2=Toplevel(ventana)
+    ventana2.title("MANITOR")
+    ventana2.configure(bg="white")
+    ventana2.geometry("1000x600+5+40")
+
+    ventana.iconify()
+
+    Labelt=Label(ventana2,text='BIENVENIDO ',
+            fg="black",bg="white",font=("Helvetica 36 "))
+    Labelt.pack()
+
+    img0=PhotoImage(file="00.gif") 
+    img1=PhotoImage(file="11.gif")
+    img2=PhotoImage(file="22.gif")
+    img3=PhotoImage(file="33.gif")
+    img4=PhotoImage(file="44.gif")
+    img5=PhotoImage(file="55.gif")
+    img6=PhotoImage(file="66.gif")
+    img7=PhotoImage(file="77.gif")
+    img8=PhotoImage(file="88.gif")
+    img9=PhotoImage(file="99.gif")
+    img10=PhotoImage(file="1010.gif")
+    img11=PhotoImage(file="1111.gif")
+    img12=PhotoImage(file="1212.gif")
+    imgF=PhotoImage(file="FF.gif")
+
+    global labeli
+    Labeli=Label(ventana2,image=img1)
+    Labeli.pack()
+    
+    while 1:
+
+        filename = 'registro.txt'
+        try:
+            archivo = open(filename,'a')
+        except:
+            archivo = open(filename,'w')
+            
+        archivo.write('inicio del programa. \n')
+               
+        archivo.write('_'+time.strftime("%d-%m-%y")+'_'+time.strftime("%H:%M:%S")+'...inicio...\n')
+        
+        Labelt.config(text='BIENVENIDO \n  Por favor mojese las manos con agua')
+        Labeli.config(image=img1)
+        Labeli.image=img1
+        ventana.update()
+        time.sleep(2)
+        
+        Labelt.config(text='deposite en la palma de la \n mano cantidad suficiente de jabon')
+        archivo.write(time.strftime("%H:%M:%S")+': llego alguien \n')
+        Labeli.config(image=img2)
+        Labeli.image=img2
+        ventana.update()
+        time.sleep(1)
+        
+        b = contadorMovimiento.funcionMovimientoEnRegion(y[0],2,1,lower,upper) 
+        if b:
+            Labelt.config(text='Cumplió con el tiempo requerido ')
+            Labeli.config(image=img0)
+            Labeli.image=img0
+            archivo.write(time.strftime("%H:%M:%S")+': Cumplió con el tiempo en jabon. \n')
+            ventana.update()
+            time.sleep(2)
+            
+        else:
+            labelt.config(text="No cumple con el tiempo \n Vuelva a empezar")
+            Labeli.config(image=imgF)
+            Labeli.image=imgF
+            archivo.write(time.strftime("%H:%M:%S")+': No cumplio con el tiempo en jabon. \n')
+            ventana.update()
+            time.sleep(2)
+
+        Labelt.config(text='frotese las palmas de las manos \n entre si')
+        Labeli.config(image=img3)
+        Labeli.image=img3
+        ventana.update()
+        c = contadorMovimiento.funcionMovimientoEnRegion(y[1],2,2,lower,upper)
+        
+        Labelt.config(text='frotese la palma de la mano derecha \n contra el dorso de la mano izquierda  \n entrelazando los dedos y viceversa')
+        Labeli.config(image=img4)
+        Labeli.image=img4
+        ventana.update()
+        
+        c = c and contadorMovimiento.funcionMovimientoEnRegion(y[1],2,2,lower,upper)
+        Labelt.config(text='frotese las palmas de las manos entre si \n con los dedos entrelazados')
+        Labeli.config(image=img5)
+        Labeli.image=img5
+        ventana.update()
+##        
+##        c = c and contadorMovimiento.funcionMovimientoEnRegion(y[1],2,2,lower,upper)
+##        Labelt.config(text='frotese el dorso de los dedos de una \n mano con la palma de la mano opuesta, \n agarrandose los dedos')
+##        Labeli.config(image=img6)
+##        Labeli.image=img6
+##        ventana.update()
+##
+##        c = c and contadorMovimiento.funcionMovimientoEnRegion(y[1],2,2,lower,upper)
+##        Labelt.config(text='frotese con un movimiento de rotacion el \n  pulgar izquierdo atrapandolo con la, \n palma de la mano derecha y viceversa')
+##        Labeli.config(image=img7)
+##        Labeli.image=img7
+##        ventana.update()
+##
+##        c = c and contadorMovimiento.funcionMovimientoEnRegion(y[1],2,2,lower,upper)
+##        Labelt.config(text='frotese la punta de los dedos de la mano \n dereha contra la palma de la mano \n izquierda, haciendo un movimiento de \n rotacion y vicerversa')
+##        Labeli.config(image=img8)
+##        Labeli.image=img8
+##        ventana.update()
+        
+        c = c and contadorMovimiento.funcionMovimientoEnRegion(y[1],2,2,lower,upper)
+        
+        if c:
+            Labelt.config(text='Cumplió con el tiempo requerido')
+            Labeli.config(image=img0)
+            Labeli.image=img0
+            archivo.write(time.strftime("%H:%M:%S")+': Cumplió con el tiempo de lavado. \n')
+            ventana.update()
+            time.sleep(2)
+        else:
+            labelt.config(text="No cumple con el tiempo \n Vuelva a empezar")
+            Labeli.config(image=imgF)
+            Labeli.image=imgF
+            archivo.write(time.strftime("%H:%M:%S")+': No cumplio con el tiempo de lavado. \n')
+            ventana.update()
+            time.sleep(2)
+       
+##        Labelt.config(text='Enjuaguese las manos con agua')
+##        Labeli.config(image=img9)
+##        Labeli.image=img9
+##        ventana.update()
+##        time.sleep(3)
+##
+##        Labelt.config(text='sequese con una toalla desechable')
+##        Labeli.config(image=img10)
+##        Labeli.image=img10
+##        ventana.update()
+##        time.sleep(3)
+##
+##        Labelt.config(text='sirvase de la toalla para cerrar el grifo')
+##        Labeli.config(image=img11)
+##        Labeli.image=img11
+##        ventana.update()
+##        time.sleep(3)
+
+        Labelt.config(text='sus manos son seguras')
+        archivo.write(time.strftime("%H:%M:%S")+': termino bien. \n')
+        Labeli.config(image=img12)
+        Labeli.image=img12
+        ventana.update()
+        time.sleep(5)
+
+        archivo.write('_'+time.strftime("%d-%m-%y")+'_'+time.strftime("%H:%M:%S")+'...fin...\n')
+
+        archivo = open('prueba.txt','w')
+        archivo.write('prueba')
+        archivo.close
+
+    archivo.write('final del programa')
+    archivo.close
+
+    archivo = open('prueba2.txt','w')
+    archivo.write('prueba2')
+    archivo.close
+
+botoninicio = Button(ventana,text="INICIAR", command=inicio,
+                fg="white",bg='red',font=("Helvetica 12 bold"))
+botoninicio.grid(row=7,column=1)
+
+####################################
+
+ventana.mainloop()
