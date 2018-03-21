@@ -3,20 +3,21 @@ import regions
 import colorPiel
 import contadorMovimiento
 import time
-import sys
-from Tkinter import *
+
+#from Tkinter import *
+from Tkinter import Tk, Label, Button, Toplevel, PhotoImage
 
 ###########################################
-ventana = Tk()
-ventana.title('MANITOR')
-ventana.configure(bg="white")
-ventana.geometry("400x220+100+100")
+ventana = Tk() # Initializes interpreter and creates root window
+ventana.title('MANITOR') # Name of the window
+ventana.configure(bg="white") # Background color
+ventana.geometry("400x220+100+100") # Size of the window
 
 label=Label(ventana,text="BIENVENIDO",
              fg="red",bg="white",font=("Helvetica 24 bold"))
 label.grid(row=1,column=1)
 
-############################################
+############################################ ETIQUETA 1 + BOTON 1
 
 labelregiones=Label(ventana,
              text="Por favor seleccione las regiones correspondientes",
@@ -26,12 +27,12 @@ labelregiones.grid(row=2,column=1)
 def regiones():
     global y
     y = regions.funcionRegiones(2)
-
+    print y
 botonregiones = Button(ventana,text="REGIONES", command=regiones,
                 fg="white",bg='red',font=("Helvetica 12 bold"))
 botonregiones.grid(row=3,column=1)
 
-###########################################
+########################################### ETIQUETA 2 + BOTON 2
 
 labelcolor=Label(ventana,
              text="Por favor seleccione un rango de color",
@@ -46,33 +47,26 @@ botoncolor = Button(ventana,text="COLOR", command=color,
                 fg="white",bg='red',font=("Helvetica 12 bold"))
 botoncolor.grid(row=5,column=1)
 
-############################################
+############################################ ETIQUETA 3 + BOTON 3
 labelinicio=Label(ventana,
-             text="Ahora si puede iniciar",
+             text="Ahora puede iniciar",
              fg="black",bg="white",font=("Helvetica 12 "))
 labelinicio.grid(row=6,column=1)
 
 def inicio():
 
-##    filename = 'Logs_'+time.strftime("%H:%M:%S")+' - ' + time.strftime("%d-%m-%y") + '.txt'
-##    try:
-##        archivo = open(filename,'r+')
-##    except:
-##        archivo = open(filename,'w')
-##    archivo.write('inicio del programa. \n')
-    
-    ventana2=Toplevel(ventana)
+    ventana2=Toplevel(ventana) # Used to display an extra application window 
     ventana2.title("MANITOR")
     ventana2.configure(bg="white")
     ventana2.geometry("1000x600+5+40")
 
-    ventana.iconify()
+    ventana.iconify() # Turns window into an icon
 
-    Labelt=Label(ventana2,text='BIENVENIDO ',
+    Labelt=Label(ventana2,text='BIENVENIDO ', # ventana2 TEXTO
             fg="black",bg="white",font=("Helvetica 36 "))
-    Labelt.pack()
+    Labelt.pack() # Organizes widgets in blocks before placing them in the parent widget
 
-    img0=PhotoImage(file="00.gif") 
+    img0=PhotoImage(file="00.gif") # Reads photos
     img1=PhotoImage(file="11.gif")
     img2=PhotoImage(file="22.gif")
     img3=PhotoImage(file="33.gif")
@@ -87,68 +81,99 @@ def inicio():
     img12=PhotoImage(file="1212.gif")
     imgF=PhotoImage(file="FF.gif")
 
-    global labeli
-    Labeli=Label(ventana2,image=img1)
-    Labeli.pack()
+    global Labeli
+    Labeli=Label(ventana2,image=img1) # ventana2 IMAGEN
+    Labeli.pack() 
+    
     
     while 1:
 
         filename = 'registro.txt'
         try:
-            archivo = open(filename,'a')
+            archivo = open(filename,'a') # Opens a file for appending, como si ya existiera y solo voy a agregar data
         except:
-            archivo = open(filename,'w')
+            archivo = open(filename,'w') # Writes a file from scratch
             
-        archivo.write('inicio del programa. \n')
+        archivo.write('Inicio del programa. \n')
                
         archivo.write('_'+time.strftime("%d-%m-%y")+'_'+time.strftime("%H:%M:%S")+'...inicio...\n')
         
-        Labelt.config(text='BIENVENIDO \n  Por favor mojese las manos con agua')
+        Labelt.config(text='BIENVENIDO \n  Por favor mójese las manos con agua')
         Labeli.config(image=img1)
         Labeli.image=img1
         ventana.update()
         time.sleep(2)
         
-        Labelt.config(text='deposite en la palma de la \n mano cantidad suficiente de jabon')
-        archivo.write(time.strftime("%H:%M:%S")+': llego alguien \n')
+        Labelt.config(text='Deposite jabón en la mano')
+        archivo.write(time.strftime("%H:%M:%S")+': Nuevo usuario \n')
         Labeli.config(image=img2)
         Labeli.image=img2
         ventana.update()
-        time.sleep(1)
+        time.sleep(0.5)
+        b = contadorMovimiento.funcionMovimientoEnRegion(y[1],0.5,2,lower,upper) 
         
-        b = contadorMovimiento.funcionMovimientoEnRegion(y[0],2,1,lower,upper) 
         if b:
             Labelt.config(text='Cumplió con el tiempo requerido ')
             Labeli.config(image=img0)
             Labeli.image=img0
             archivo.write(time.strftime("%H:%M:%S")+': Cumplió con el tiempo en jabon. \n')
             ventana.update()
-            time.sleep(2)
+            time.sleep(0.5)
             
         else:
-            labelt.config(text="No cumple con el tiempo \n Vuelva a empezar")
+            Labelt.config(text="No cumple con el tiempo \n Vuelva a empezar")
             Labeli.config(image=imgF)
             Labeli.image=imgF
-            archivo.write(time.strftime("%H:%M:%S")+': No cumplio con el tiempo en jabon. \n')
+            archivo.write(time.strftime("%H:%M:%S")+': No cumplió con el tiempo en jabón. \n')
             ventana.update()
-            time.sleep(2)
+            time.sleep(0.5)
 
-        Labelt.config(text='frotese las palmas de las manos \n entre si')
+        Labelt.config(text='Frote las palmas de las manos \n entre sí')
         Labeli.config(image=img3)
         Labeli.image=img3
-        ventana.update()
-        c = contadorMovimiento.funcionMovimientoEnRegion(y[1],2,2,lower,upper)
-        
-        Labelt.config(text='frotese la palma de la mano derecha \n contra el dorso de la mano izquierda  \n entrelazando los dedos y viceversa')
+        d = contadorMovimiento.funcionMovimientoEnRegion(y[0],0.5,1,lower,upper)        
+        if d:
+            Labelt.config(text='Cumplió con el tiempo requerido ')
+            Labeli.config(image=img0)
+            Labeli.image=img0
+            archivo.write(time.strftime("%H:%M:%S")+': Cumplió con el tiempo en jabon. \n')
+            ventana.update()
+            time.sleep(0.5)
+            
+        else:
+            Labelt.config(text="No cumple con el tiempo \n Vuelva a empezar")
+            Labeli.config(image=imgF)
+            Labeli.image=imgF
+            archivo.write(time.strftime("%H:%M:%S")+': No cumplió con el tiempo en jabon. \n')
+            ventana.update()
+            time.sleep(0.5)
+            
+        Labelt.config(text='Frote la palma de la mano derecha \n contra el dorso de la mano izquierda  \n entrelazando los dedos y viceversa')
         Labeli.config(image=img4)
         Labeli.image=img4
         ventana.update()
-        
-        c = c and contadorMovimiento.funcionMovimientoEnRegion(y[1],2,2,lower,upper)
-        Labelt.config(text='frotese las palmas de las manos entre si \n con los dedos entrelazados')
-        Labeli.config(image=img5)
-        Labeli.image=img5
-        ventana.update()
+        e = contadorMovimiento.funcionMovimientoEnRegion(y[0],0.5,2,lower,upper)
+        if e:
+            Labelt.config(text='Cumplió con el tiempo requerido ')
+            Labeli.config(image=img0)
+            Labeli.image=img0
+            archivo.write(time.strftime("%H:%M:%S")+': Cumplió con el tiempo en jabon. \n')
+            ventana.update()
+            time.sleep(0.5)
+            
+        else:
+            Labelt.config(text="No cumple con el tiempo \n Vuelva a empezar")
+            Labeli.config(image=imgF)
+            Labeli.image=imgF
+            archivo.write(time.strftime("%H:%M:%S")+': No cumplió con el tiempo en jabon. \n')
+            ventana.update()
+            time.sleep(0.5)
+            
+#        c = c and contadorMovimiento.funcionMovimientoEnRegion(y[1],2,2,lower,upper)
+#        Labelt.config(text='Frote las palmas de las manos entre sí \n con los dedos entrelazados')
+#        Labeli.config(image=img5)
+#        Labeli.image=img5
+#        ventana.update()
 ##        
 ##        c = c and contadorMovimiento.funcionMovimientoEnRegion(y[1],2,2,lower,upper)
 ##        Labelt.config(text='frotese el dorso de los dedos de una \n mano con la palma de la mano opuesta, \n agarrandose los dedos')
@@ -168,22 +193,22 @@ def inicio():
 ##        Labeli.image=img8
 ##        ventana.update()
         
-        c = c and contadorMovimiento.funcionMovimientoEnRegion(y[1],2,2,lower,upper)
-        
-        if c:
-            Labelt.config(text='Cumplió con el tiempo requerido')
-            Labeli.config(image=img0)
-            Labeli.image=img0
-            archivo.write(time.strftime("%H:%M:%S")+': Cumplió con el tiempo de lavado. \n')
-            ventana.update()
-            time.sleep(2)
-        else:
-            labelt.config(text="No cumple con el tiempo \n Vuelva a empezar")
-            Labeli.config(image=imgF)
-            Labeli.image=imgF
-            archivo.write(time.strftime("%H:%M:%S")+': No cumplio con el tiempo de lavado. \n')
-            ventana.update()
-            time.sleep(2)
+#        c = c and contadorMovimiento.funcionMovimientoEnRegion(y[1],2,2,lower,upper)
+#        
+#        if c:
+#            Labelt.config(text='Cumplió con el tiempo requerido')
+#            Labeli.config(image=img0)
+#            Labeli.image=img0
+#            archivo.write(time.strftime("%H:%M:%S")+': Cumplió con el tiempo de lavado. \n')
+#            ventana.update()
+#            time.sleep(1)
+#        else:
+#            Labelt.config(text="No cumple con el tiempo \n Vuelva a empezar")
+#            Labeli.config(image=imgF)
+#            Labeli.image=imgF
+#            archivo.write(time.strftime("%H:%M:%S")+': No cumplio con el tiempo de lavado. \n')
+#            ventana.update()
+#            time.sleep(1)
        
 ##        Labelt.config(text='Enjuaguese las manos con agua')
 ##        Labeli.config(image=img9)
@@ -203,8 +228,8 @@ def inicio():
 ##        ventana.update()
 ##        time.sleep(3)
 
-        Labelt.config(text='sus manos son seguras')
-        archivo.write(time.strftime("%H:%M:%S")+': termino bien. \n')
+        Labelt.config(text='Sus manos son seguras')
+        archivo.write(time.strftime("%H:%M:%S")+': Terminó bien. \n')
         Labeli.config(image=img12)
         Labeli.image=img12
         ventana.update()
