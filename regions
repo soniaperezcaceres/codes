@@ -2,8 +2,6 @@
 
 def funcionRegiones(regionsNumber):
     
-
-    
     def on_mouse(event,x,y,flags,params):
     
         global rect,startPoint,endPoint, ix, iy, dragnDrop, releaseRectangle, regionCount, regionPoints, regionDone
@@ -20,7 +18,17 @@ def funcionRegiones(regionsNumber):
                 startPoint = True
                 
             elif endPoint == False: # Como ya starPoint esta en TRUE, esta condicion se cumple y ahora endPoint pasa a ser TRUE tambien  
-                rect = (rect[0], rect[1], x, y) # Conserva las coordernadas de starPoint y añade las de endPoint
+                if rect[0]<x: # Esto fue lo que agregué: arregla el array de tal manera que quede uniforme sin
+                    if rect[1]<y: # importar el orden en el que se hayan definido las esquinas de la región
+                        rect = (rect[0], rect[1], x, y) 
+                    else:
+                        rect = (rect[0], y, x, rect[1])
+                else:
+                    if rect[1]<y:
+                        rect = (x, rect[1], rect[0], y)
+                    else:
+                        rect = (x, y, rect[0], rect[1])
+                #rect = (rect[0], rect[1], x, y) # Conserva las coordernadas de starPoint y añade las de endPoint
                 dragnDrop == False
                 regionPoints[regionCount][0] = rect[0]
                 regionPoints[regionCount][1] = rect[1]
@@ -48,6 +56,8 @@ def funcionRegiones(regionsNumber):
     waitTime = 50
     regionsNo = regionsNumber
     cap = cv2.VideoCapture(0)
+    cap.set(3,320)
+    cap.set(4,240)
     rect = (0,0,0,0)
     startPoint = False
     endPoint = False
@@ -73,7 +83,6 @@ def funcionRegiones(regionsNumber):
             cv2.rectangle(frame, (rect[0], rect[1]), (ix, iy), (255, 0, 255), 2) # Con las coordenadas construye el rectángulo
             
         # Dibujar el rectángulo
-    
         if regionDone == True:
             for rects in range (0,regionCount):
                 cv2.rectangle(frame, (regionPoints[rects][0], regionPoints[rects][1]), (regionPoints[rects][2], regionPoints[rects][3]), (255, 0, 255), 2) # Con las coordenadas construye el rectángulo
@@ -95,7 +104,7 @@ def funcionRegiones(regionsNumber):
             break
         
         if regionCount == regionsNo:
-            cv2.VideoCapture(0).release()
+            #cv2.VideoCapture(0).release()
             break
         
         
