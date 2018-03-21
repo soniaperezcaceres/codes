@@ -5,7 +5,7 @@ def funcionMovimientoEnRegion(regionCoordinates,tiempo,noRegion,lowerValue,upper
     import numpy as np
     import time
     from nms_fast import mincuadro
-     
+    
     cap = cv2.VideoCapture(0)
     m=25
     m1=500
@@ -16,7 +16,7 @@ def funcionMovimientoEnRegion(regionCoordinates,tiempo,noRegion,lowerValue,upper
     outHands = 0
     inHandsnoMov = 0
     prevBoxes = []
-    xRange = 50
+    xRange = 10
     
     def colorChange(frame):
     #convertimos a escalas de grises
@@ -64,9 +64,9 @@ def funcionMovimientoEnRegion(regionCoordinates,tiempo,noRegion,lowerValue,upper
             
             if(xLimA1<rect[0] and rect[0]<xLimA2 and yLimA1<rect[1] and rect[1]<yLimA2 
                and xLimB1<rect[2] and rect[2]<xLimB2 and yLimB1<rect[3] and rect[3]<yLimB2):
-              return True
+              return False # No hubo mucho cambio en el movimiento comparado con el frame anterior
         else:
-              return False
+              return True
         
     
     # Nos servira para obterner el fondo
@@ -132,32 +132,32 @@ def funcionMovimientoEnRegion(regionCoordinates,tiempo,noRegion,lowerValue,upper
             
       for rect in cajas:
           overlap = overlapRectangles(regionCoordinates,rect)
-          if overlap:
+          if overlap: # overlap quiere decir que las cajas detectadas se sobreponen a la de la región
               exitHands = 0
               outHands = 0
               c = umbralMovimiento(prevBoxes,rect,xRange)
                            
-              if not c: 
+              if c: # Hubo movimiento significativo
                   if chrono == 0:
                       chrono = currentTime()
                       prevBoxes = cajas
-              #        print "Hay presencia en la region ", noRegion
+                      print "Hay movimiento en la region ", noRegion
                       pass
                   else:
                       chrono_aux = currentTime()
-                      if (chrono_aux - chrono) >= tiempo:
+                      if (chrono_aux - chrono) >= tiempo: #Hubo movimiento durante el tiempo suficiente
                           cap.release()
                           cv2.destroyAllWindows()
                           for i in range (1,10):
                             cv2.waitKey(1)
                           return True
                           break
-              else:
+              else: # No hubo movimiento significativo
                   outHands = 0
                   exitHands = 0
                   inHandsnoMov+=1
-                  if inHandsnoMov == 200:
-               #       print "Debido a que no ha seguido el procedimiento deberá recomenzar ' MUEVA MAS"
+                  if inHandsnoMov == 50: # Si no hubo movimiento significativo durante 50 ciclos
+                      print "Debido a que no ha seguido el procedimiento deberá recomenzar"
                       cap.release()
                       cv2.destroyAllWindows()
                       for i in range (1,10):
@@ -165,12 +165,12 @@ def funcionMovimientoEnRegion(regionCoordinates,tiempo,noRegion,lowerValue,upper
                       return False
                       break
                                     
-          elif not cajas:
+          elif not cajas: # No se sobreponen y no se detectan cajas
                   inHandsnoMov = 0
                   outHands = 0
-                  exitHands+=1
-                  if exitHands == 100:
-                      print "exit"
+                  exitHands+=1 
+                  if exitHands == 30: # No se detectaron manos durante 30 ciclos
+                      print "No hay manos qué detectar"
                       cap.release()
                       cv2.destroyAllWindows()
                       for i in range (1,10):
@@ -178,14 +178,14 @@ def funcionMovimientoEnRegion(regionCoordinates,tiempo,noRegion,lowerValue,upper
                       return False
                       break
                  
-          else:
+          else: # No se sobreponen pero sí se detectan cajas
               inHandsnoMov = 0
               exitHands = 0
-##              if outHands == 1:
-           #       print 'No hay presencia en la región Por favor hagalo mejor.'
+              if outHands == 1:
+                  print 'No hay presencia en la región Por favor hagalo mejor.'
               chrono = 0
               outHands+=1
-              if outHands == 500:
+              if outHands == 100:  # Se detectaron manos en el lugar incorrecto durante 30 ciclos
                   cap.release()
                   cv2.destroyAllWindows()
                   for i in range (1,10):
@@ -220,4 +220,4 @@ def funcionMovimientoEnRegion(regionCoordinates,tiempo,noRegion,lowerValue,upper
         cv2.destroyAllWindows()
         for i in range (1,10):
             cv2.waitKey(1)
-    
+
