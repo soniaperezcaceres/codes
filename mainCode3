@@ -53,6 +53,8 @@ labelinicio=Label(ventana,
              fg="black",bg="white",font=("Helvetica 12 "))
 labelinicio.grid(row=6,column=1)
 
+
+
 def inicio():
 
     ventana2=Toplevel(ventana) # Used to display an extra application window 
@@ -98,7 +100,7 @@ def inicio():
                
         archivo.write('_'+time.strftime("%d-%m-%y")+'_'+time.strftime("%H:%M:%S")+'...inicio...\n')
         
-        Labelt.config(text='BIENVENIDO \n  Por favor mójese las manos con agua')
+        Labelt.config(text='BIENVENIDO \n  Por favor moje sus manos con agua')
         Labeli.config(image=img1)
         Labeli.image=img1
         ventana.update()
@@ -110,70 +112,92 @@ def inicio():
         Labeli.image=img2
         ventana.update()
         time.sleep(0.5)
-        b = contadorMovimiento.funcionMovimientoEnRegion(y[1],0.5,2,lower,upper) 
+        b,auxType = contadorMovimiento.funcionMovimientoEnRegion(y[1],5,2,lower,upper) 
         
         if b:
-            Labelt.config(text='Cumplió con el tiempo requerido ')
+            Labelt.config(text='Cumplió con el tiempo requerido')
             Labeli.config(image=img0)
             Labeli.image=img0
-            archivo.write(time.strftime("%H:%M:%S")+': Cumplió con el tiempo en jabon. \n')
+            archivo.write(time.strftime("%H:%M:%S")+': Cumplió con el tiempo en jabón. \n')
             ventana.update()
-            time.sleep(0.5)
+            time.sleep(2)
             
-        else:
-            Labelt.config(text="No cumple con el tiempo \n Vuelva a empezar")
+            
+        elif auxType == 2:
+            
+            Labelt.config(text="No se detectó movimiento de sus manos \n Vuelva a empezar")
             Labeli.config(image=imgF)
             Labeli.image=imgF
-            archivo.write(time.strftime("%H:%M:%S")+': No cumplió con el tiempo en jabón. \n')
+            archivo.write(time.strftime("%H:%M:%S")+': No hubo suficiente movimiento de las manos. \n')
             ventana.update()
-            time.sleep(0.5)
+            time.sleep(2)
 
-        Labelt.config(text='Frote las palmas de las manos \n entre sí')
-        Labeli.config(image=img3)
-        Labeli.image=img3
-        d = contadorMovimiento.funcionMovimientoEnRegion(y[0],0.5,1,lower,upper)        
-        if d:
-            Labelt.config(text='Cumplió con el tiempo requerido ')
-            Labeli.config(image=img0)
-            Labeli.image=img0
-            archivo.write(time.strftime("%H:%M:%S")+': Cumplió con el tiempo en jabon. \n')
-            ventana.update()
-            time.sleep(0.5)
+        elif auxType == 3:
             
-        else:
-            Labelt.config(text="No cumple con el tiempo \n Vuelva a empezar")
+            Labelt.config(text="No se detectaron sus manos \n Vuelva a empezar")
             Labeli.config(image=imgF)
             Labeli.image=imgF
-            archivo.write(time.strftime("%H:%M:%S")+': No cumplió con el tiempo en jabon. \n')
+            archivo.write(time.strftime("%H:%M:%S")+': No se detectaron las manos. \n')
             ventana.update()
-            time.sleep(0.5)
+            time.sleep(2)
+
+        elif auxType == 4:
             
-        Labelt.config(text='Frote la palma de la mano derecha \n contra el dorso de la mano izquierda  \n entrelazando los dedos y viceversa')
-        Labeli.config(image=img4)
-        Labeli.image=img4
-        ventana.update()
-        e = contadorMovimiento.funcionMovimientoEnRegion(y[0],0.5,2,lower,upper)
-        if e:
-            Labelt.config(text='Cumplió con el tiempo requerido ')
-            Labeli.config(image=img0)
-            Labeli.image=img0
-            archivo.write(time.strftime("%H:%M:%S")+': Cumplió con el tiempo en jabon. \n')
-            ventana.update()
-            time.sleep(0.5)
-            
-        else:
-            Labelt.config(text="No cumple con el tiempo \n Vuelva a empezar")
+            Labelt.config(text="No se detectaron sus manos dentro de la región de lectura \n Vuelva a empezar")
             Labeli.config(image=imgF)
             Labeli.image=imgF
-            archivo.write(time.strftime("%H:%M:%S")+': No cumplió con el tiempo en jabon. \n')
+            archivo.write(time.strftime("%H:%M:%S")+': No se registraron manos dentro de la región. \n')
             ventana.update()
-            time.sleep(0.5)
+            time.sleep(2)
+
+
             
-#        c = c and contadorMovimiento.funcionMovimientoEnRegion(y[1],2,2,lower,upper)
-#        Labelt.config(text='Frote las palmas de las manos entre sí \n con los dedos entrelazados')
-#        Labeli.config(image=img5)
-#        Labeli.image=img5
-#        ventana.update()
+##        Labelt.config(text='Frote las palmas de las manos \n entre sí')
+##        Labeli.config(image=img3)
+##        Labeli.image=img3
+##        d = contadorMovimiento.funcionMovimientoEnRegion(y[0],0.5,1,lower,upper)        
+##        if d:
+##            Labelt.config(text='Cumplió con el tiempo requerido ')
+##            Labeli.config(image=img0)
+##            Labeli.image=img0
+##            archivo.write(time.strftime("%H:%M:%S")+': Cumplió con el tiempo en jabon. \n')
+##            ventana.update()
+##            time.sleep(0.5)
+##            
+##        else:
+##            Labelt.config(text="No cumple con el tiempo \n Vuelva a empezar")
+##            Labeli.config(image=imgF)
+##            Labeli.image=imgF
+##            archivo.write(time.strftime("%H:%M:%S")+': No cumplió con el tiempo en jabon. \n')
+##            ventana.update()
+##            time.sleep(0.5)
+##            
+##        Labelt.config(text='Frote la palma de la mano derecha \n contra el dorso de la mano izquierda  \n entrelazando los dedos y viceversa')
+##        Labeli.config(image=img4)
+##        Labeli.image=img4
+##        ventana.update()
+##        e = contadorMovimiento.funcionMovimientoEnRegion(y[0],0.5,2,lower,upper)
+##        if e:
+##            Labelt.config(text='Cumplió con el tiempo requerido ')
+##            Labeli.config(image=img0)
+##            Labeli.image=img0
+##            archivo.write(time.strftime("%H:%M:%S")+': Cumplió con el tiempo en jabon. \n')
+##            ventana.update()
+##            time.sleep(0.5)
+##            
+##        else:
+##            Labelt.config(text="No cumple con el tiempo \n Vuelva a empezar")
+##            Labeli.config(image=imgF)
+##            Labeli.image=imgF
+##            archivo.write(time.strftime("%H:%M:%S")+': No cumplió con el tiempo en jabon. \n')
+##            ventana.update()
+##            time.sleep(0.5)
+            
+##        f = contadorMovimiento.funcionMovimientoEnRegion(y[1],2,2,lower,upper)
+##        Labelt.config(text='Frote las palmas de las manos entre sí \n con los dedos entrelazados')
+##        Labeli.config(image=img5)
+##        Labeli.image=img5
+##        ventana.update()
 ##        
 ##        c = c and contadorMovimiento.funcionMovimientoEnRegion(y[1],2,2,lower,upper)
 ##        Labelt.config(text='frotese el dorso de los dedos de una \n mano con la palma de la mano opuesta, \n agarrandose los dedos')
