@@ -17,6 +17,7 @@ def funcionMovimientoEnRegion(regionCoordinates,tiempo,noRegion,lowerValue,upper
     inHandsnoMov = 0
     prevBoxes = []
     xRange = 10
+    reason = 0
     
     def colorChange(frame):
     #convertimos a escalas de grises
@@ -122,77 +123,89 @@ def funcionMovimientoEnRegion(regionCoordinates,tiempo,noRegion,lowerValue,upper
       
       image2 = mincuadro(frame2,np.array(cajas)) 
       
-#      print cajas
+      print cajas
             
       if not prevBoxes:
            prevBoxes = cajas
            pass
                     
       # Define si hay movimiento dentro de las regiones
-            
-      for rect in cajas:
-          overlap = overlapRectangles(regionCoordinates,rect)
-          if overlap: # overlap quiere decir que las cajas detectadas se sobreponen a la de la región
-              exitHands = 0
-              outHands = 0
-              c = umbralMovimiento(prevBoxes,rect,xRange)
-                           
-              if c: # Hubo movimiento significativo
-                  if chrono == 0:
-                      chrono = currentTime()
-                      prevBoxes = cajas
-                      print "Hay movimiento en la region ", noRegion
-                      pass
-                  else:
-                      chrono_aux = currentTime()
-                      if (chrono_aux - chrono) >= tiempo: #Hubo movimiento durante el tiempo suficiente
+      if cajas == []:
+          inHandsnoMov = 0
+          outHands = 0
+          exitHands+=1 
+          if exitHands == 10: # No se detectaron manos durante 30 ciclos
+              print "No hay manos qué detectar"
+              reason = 3
+              cap.release()
+              cv2.destroyAllWindows()
+              for i in range (1,10):
+                  cv2.waitKey(1)
+              return False, reason
+              break
+          else:
+              cv2.rectangle(image2, (regionCoordinates[0], regionCoordinates[1]), (regionCoordinates[2], regionCoordinates[3]), (255, 0, 255), 2) # Con las coordenadas construye el rectángulo
+              cv2.imshow("other", image2)
+              fondoanterior = gris
+              prevBoxes = cajas
+              k = cv2.waitKey(5) & 0xFF
+              time.sleep(0.015)
+              continue
+      else:     
+          for rect in cajas:
+              overlap = overlapRectangles(regionCoordinates,rect)
+              if overlap: # overlap quiere decir que las cajas detectadas se sobreponen a la de la región
+                  exitHands = 0
+                  outHands = 0
+                  c = umbralMovimiento(prevBoxes,rect,xRange)
+                               
+                  if c: # Hubo movimiento significativo
+                      if chrono == 0:
+                          chrono = currentTime()
+                          prevBoxes = cajas
+                          print "Hay movimiento en la region ", noRegion
+                          pass
+                      else:
+                          chrono_aux = currentTime()
+                          if (chrono_aux - chrono) >= tiempo: #Hubo movimiento durante el tiempo suficiente
+                              reason = 1
+                              cap.release()
+                              cv2.destroyAllWindows()
+                              for i in range (1,10):
+                                cv2.waitKey(1)
+                              return True, reason
+                              break
+                  else: # No hubo movimiento significativo
+                      outHands = 0
+                      exitHands = 0
+                      inHandsnoMov+=1
+                      if inHandsnoMov == 10: # Si no hubo movimiento significativo durante 50 ciclos
+                          print "Debido a que no ha seguido el procedimiento deberá recomenzar"
+                          reason = 2
                           cap.release()
                           cv2.destroyAllWindows()
                           for i in range (1,10):
                             cv2.waitKey(1)
-                          return True
+                          return False, reason
                           break
-              else: # No hubo movimiento significativo
-                  outHands = 0
-                  exitHands = 0
-                  inHandsnoMov+=1
-                  if inHandsnoMov == 50: # Si no hubo movimiento significativo durante 50 ciclos
-                      print "Debido a que no ha seguido el procedimiento deberá recomenzar"
-                      cap.release()
-                      cv2.destroyAllWindows()
-                      for i in range (1,10):
-                        cv2.waitKey(1)
-                      return False
-                      break
-                                    
-          elif not cajas: # No se sobreponen y no se detectan cajas
+                                        
+                     
+              else: # No se sobreponen pero sí se detectan cajas
                   inHandsnoMov = 0
-                  outHands = 0
-                  exitHands+=1 
-                  if exitHands == 30: # No se detectaron manos durante 30 ciclos
-                      print "No hay manos qué detectar"
+                  exitHands = 0
+                  if outHands == 1:
+                      print 'No hay presencia en la región Por favor hagalo mejor.'
+                  chrono = 0
+                  outHands+=1
+                  if outHands == 10:  # Se detectaron manos en el lugar incorrecto durante 30 ciclos
+                      reason = 4
                       cap.release()
                       cv2.destroyAllWindows()
                       for i in range (1,10):
                           cv2.waitKey(1)
-                      return False
+                      return False, reason
                       break
-                 
-          else: # No se sobreponen pero sí se detectan cajas
-              inHandsnoMov = 0
-              exitHands = 0
-              if outHands == 1:
-                  print 'No hay presencia en la región Por favor hagalo mejor.'
-              chrono = 0
-              outHands+=1
-              if outHands == 100:  # Se detectaron manos en el lugar incorrecto durante 30 ciclos
-                  cap.release()
-                  cv2.destroyAllWindows()
-                  for i in range (1,10):
-                      cv2.waitKey(1)
-                  return False
-                  break
-                  
+                      
              
       cv2.rectangle(image2, (regionCoordinates[0], regionCoordinates[1]), (regionCoordinates[2], regionCoordinates[3]), (255, 0, 255), 2) # Con las coordenadas construye el rectángulo
    
