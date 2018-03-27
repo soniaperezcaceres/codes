@@ -133,7 +133,8 @@ def funcionMovimientoEnRegion(regionCoordinates,tiempo,noRegion,lowerValue,upper
       if cajas == []:
           inHandsnoMov = 0
           outHands = 0
-          exitHands+=1 
+          exitHands+=1
+          chrono = 0
           if exitHands == 10: # No se detectaron manos durante 30 ciclos
               print "No hay manos qué detectar"
               reason = 3
@@ -157,6 +158,7 @@ def funcionMovimientoEnRegion(regionCoordinates,tiempo,noRegion,lowerValue,upper
               if overlap: # overlap quiere decir que las cajas detectadas se sobreponen a la de la región
                   exitHands = 0
                   outHands = 0
+                  inHandsnoMov = 0
                   c = umbralMovimiento(prevBoxes,rect,xRange)
                                
                   if c: # Hubo movimiento significativo
@@ -176,6 +178,7 @@ def funcionMovimientoEnRegion(regionCoordinates,tiempo,noRegion,lowerValue,upper
                               return True, reason
                               break
                   else: # No hubo movimiento significativo
+                      chrono = 0
                       outHands = 0
                       exitHands = 0
                       inHandsnoMov+=1
@@ -191,11 +194,11 @@ def funcionMovimientoEnRegion(regionCoordinates,tiempo,noRegion,lowerValue,upper
                                         
                      
               else: # No se sobreponen pero sí se detectan cajas
+                  chrono = 0
                   inHandsnoMov = 0
                   exitHands = 0
                   if outHands == 1:
                       print 'No hay presencia en la región Por favor hagalo mejor.'
-                  chrono = 0
                   outHands+=1
                   if outHands == 10:  # Se detectaron manos en el lugar incorrecto durante 30 ciclos
                       reason = 4
