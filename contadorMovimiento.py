@@ -134,7 +134,7 @@ def funcionMovimientoEnRegion(regionCoordinates,tiempo,noRegion,lowerValue,upper
           inHandsnoMov = 0
           outHands = 0
           exitHands+=1
-          chrono = 0
+          #chrono = 0
           if exitHands == 10: # No se detectaron manos durante 30 ciclos
               print "No hay manos qué detectar"
               reason = 3
