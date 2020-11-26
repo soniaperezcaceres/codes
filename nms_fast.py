@@ -1,0 +1,21 @@
+# import the necessary packages
+from pyimage.nms import non_max_suppression_fast
+
+import cv2
+
+
+def mincuadro(imagePath, boundingBoxes):
+	# load the image and clone it
+   # print "[x] %d initial bounding boxes" % (len(boundingBoxes))
+    orig = imagePath
+    image = orig.copy()
+
+	# perform non-maximum suppression on the bounding boxes
+    pick = non_max_suppression_fast(boundingBoxes, 0.3)
+   # print "[x] after applying non-maximum, %d bounding boxes" % (len(pick))
+
+	# loop over the picked bounding boxes and draw them
+    for (startX, startY, endX, endY) in pick:
+        cv2.rectangle(image, (startX, startY), (endX, endY), (0, 255, 0), 2)
+        
+    return image

@@ -56,13 +56,13 @@ def funcionColor():
        pass
      
     #Creamos una ventana llamada 'image' en la que habra todos los sliders
-##    cv2.namedWindow('image')
-##    cv2.createTrackbar('H Minimo','image',0,255,nothing)
-##    cv2.createTrackbar('H Maximo','image',0,255,nothing)
-##    cv2.createTrackbar('S Minimo','image',0,255,nothing)
-##    cv2.createTrackbar('S Maximo','image',0,255,nothing)
-##    cv2.createTrackbar('V Minimo','image',0,255,nothing)
-##    cv2.createTrackbar('V Maximo','image',0,255,nothing)
+    cv2.namedWindow('image')
+    cv2.createTrackbar('H Minimo','image',0,255,nothing)
+    cv2.createTrackbar('H Maximo','image',0,255,nothing)
+    cv2.createTrackbar('S Minimo','image',0,255,nothing)
+    cv2.createTrackbar('S Maximo','image',0,255,nothing)
+    cv2.createTrackbar('V Minimo','image',0,255,nothing)
+    cv2.createTrackbar('V Maximo','image',0,255,nothing)
      
     #nos servira para obterner el fondo
     fondo = None

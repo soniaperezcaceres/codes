@@ -1,4 +1,4 @@
-    # -*- coding: utf-8 -*-
+ # -*- coding: utf-8 -*-
 def funcionMovimientoEnRegion(regionCoordinates,tiempo,noRegion,lowerValue,upperValue):
     
     import cv2
@@ -66,7 +66,7 @@ def funcionMovimientoEnRegion(regionCoordinates,tiempo,noRegion,lowerValue,upper
             if(xLimA1<rect[0] and rect[0]<xLimA2 and yLimA1<rect[1] and rect[1]<yLimA2 
                and xLimB1<rect[2] and rect[2]<xLimB2 and yLimB1<rect[3] and rect[3]<yLimB2):
               return False # No hubo mucho cambio en el movimiento comparado con el frame anterior
-        else:
+            else:
               return True
         
     
@@ -123,7 +123,7 @@ def funcionMovimientoEnRegion(regionCoordinates,tiempo,noRegion,lowerValue,upper
       
       image2 = mincuadro(frame2,np.array(cajas)) 
       
-      print cajas
+     # print cajas
             
       if not prevBoxes:
            prevBoxes = cajas
@@ -135,8 +135,10 @@ def funcionMovimientoEnRegion(regionCoordinates,tiempo,noRegion,lowerValue,upper
           outHands = 0
           exitHands+=1
           #chrono = 0
+
+         # print "No se están detectando sus manos"
           if exitHands == 10: # No se detectaron manos durante 30 ciclos
-              print "No hay manos qué detectar"
+              #print "No hay manos qué detectar"
               reason = 3
               cap.release()
               cv2.destroyAllWindows()
@@ -148,7 +150,7 @@ def funcionMovimientoEnRegion(regionCoordinates,tiempo,noRegion,lowerValue,upper
               cv2.rectangle(image2, (regionCoordinates[0], regionCoordinates[1]), (regionCoordinates[2], regionCoordinates[3]), (255, 0, 255), 2) # Con las coordenadas construye el rectángulo
               cv2.imshow("other", image2)
               fondoanterior = gris
-              prevBoxes = cajas
+              #prevBoxes = cajas
               k = cv2.waitKey(5) & 0xFF
               time.sleep(0.015)
               continue
@@ -165,7 +167,7 @@ def funcionMovimientoEnRegion(regionCoordinates,tiempo,noRegion,lowerValue,upper
                       if chrono == 0:
                           chrono = currentTime()
                           prevBoxes = cajas
-                          print "Hay movimiento en la region ", noRegion
+                          #print "Hay movimiento en la region ", noRegion
                           pass
                       else:
                           chrono_aux = currentTime()
@@ -183,7 +185,7 @@ def funcionMovimientoEnRegion(regionCoordinates,tiempo,noRegion,lowerValue,upper
                       exitHands = 0
                       inHandsnoMov+=1
                       if inHandsnoMov == 10: # Si no hubo movimiento significativo durante 50 ciclos
-                          print "Debido a que no ha seguido el procedimiento deberá recomenzar"
+                          #print "Debido a que no ha seguido el procedimiento deberá recomenzar"
                           reason = 2
                           cap.release()
                           cv2.destroyAllWindows()
@@ -197,8 +199,8 @@ def funcionMovimientoEnRegion(regionCoordinates,tiempo,noRegion,lowerValue,upper
                   chrono = 0
                   inHandsnoMov = 0
                   exitHands = 0
-                  if outHands == 1:
-                      print 'No hay presencia en la región Por favor hagalo mejor.'
+                  #if outHands == 1:
+                      #print 'No hay presencia en la región Por favor hagalo mejor.'
                   outHands+=1
                   if outHands == 10:  # Se detectaron manos en el lugar incorrecto durante 30 ciclos
                       reason = 4
@@ -236,4 +238,6 @@ def funcionMovimientoEnRegion(regionCoordinates,tiempo,noRegion,lowerValue,upper
         cv2.destroyAllWindows()
         for i in range (1,10):
             cv2.waitKey(1)
+
+
 
